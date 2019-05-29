@@ -81,7 +81,7 @@ mod suppress_child_output {
     use std::thread;
     use std::time::Duration;
     use chan;
-    use error::Result;
+    use crate::error::Result;
 
     /**
     Suppresses the stderr output of a child process, unless:
@@ -96,7 +96,7 @@ mod suppress_child_output {
     pub fn suppress_child_output(cmd: &mut Command, timeout: Duration) -> Result<ChildToken> {
         cmd.stderr(process::Stdio::piped());
 
-        let mut child = try!(cmd.spawn());
+        let mut child = cmd.spawn()?;
         let stderr = child.stderr.take().expect("no stderr pipe found");
 
         let timeout_chan = chan::after(timeout);
@@ -125,7 +125,7 @@ mod suppress_child_output {
         });
 
         Ok(ChildToken {
-            child: child,
+            child,
             done_sig: Some(done_sig),
             // stderr_join: stderr_join,
         })

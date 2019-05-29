@@ -46,12 +46,10 @@ fn main() {
         cmd.arg(arg);
     }
 
-    let exit_status = match match cmd.status() {
-        Ok(st) => st.code(),
-        Err(_) => None,
-    } {
-        Some(c) => c,
-        None => !0
-    };
+    let exit_status = cmd.status()
+        .ok()
+        .and_then(|value| value.code())
+        .unwrap_or(0);
+
     std::process::exit(exit_status);
 }
